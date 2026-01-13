@@ -1818,6 +1818,19 @@ function BackgroundConfig(props: { scrollRef: HTMLDivElement }) {
 							});
 						},
 					}}
+					inset={{
+						value: project.background.advancedShadow?.inset ?? false,
+						onChange: (v) => {
+							setProject("background", "advancedShadow", {
+								...(project.background.advancedShadow ?? {
+									size: 50,
+									opacity: 18,
+									blur: 50,
+								}),
+								inset: v,
+							});
+						},
+					}}
 				/>
 			</Field>
 			{/* <ComingSoonTooltip>
@@ -1999,48 +2012,61 @@ function CameraConfig(props: { scrollRef: HTMLDivElement }) {
 						step={0.1}
 						formatTooltip="%"
 					/>
-					<ShadowSettings
-						scrollRef={props.scrollRef}
-						size={{
-							value: [project.camera.advanced_shadow?.size ?? 50],
-							onChange: (v) => {
-								setProject("camera", "advanced_shadow", {
-									...(project.camera.advanced_shadow ?? {
-										size: 50,
-										opacity: 18,
-										blur: 50,
-									}),
-									size: v[0],
-								});
-							},
-						}}
-						opacity={{
-							value: [project.camera.advanced_shadow?.opacity ?? 18],
-							onChange: (v) => {
-								setProject("camera", "advanced_shadow", {
-									...(project.camera.advanced_shadow ?? {
-										size: 50,
-										opacity: 18,
-										blur: 50,
-									}),
-									opacity: v[0],
-								});
-							},
-						}}
-						blur={{
-							value: [project.camera.advanced_shadow?.blur ?? 50],
-							onChange: (v) => {
-								setProject("camera", "advanced_shadow", {
-									...(project.camera.advanced_shadow ?? {
-										size: 50,
-										opacity: 18,
-										blur: 50,
-									}),
-									blur: v[0],
-								});
-							},
-						}}
-					/>
+				<ShadowSettings
+					scrollRef={props.scrollRef}
+					size={{
+						value: [project.camera.advanced_shadow?.size ?? 50],
+						onChange: (v) => {
+							setProject("camera", "advanced_shadow", {
+								...(project.camera.advanced_shadow ?? {
+									size: 50,
+									opacity: 18,
+									blur: 50,
+								}),
+								size: v[0],
+							});
+						},
+					}}
+					opacity={{
+						value: [project.camera.advanced_shadow?.opacity ?? 18],
+						onChange: (v) => {
+							setProject("camera", "advanced_shadow", {
+								...(project.camera.advanced_shadow ?? {
+									size: 50,
+									opacity: 18,
+									blur: 50,
+								}),
+								opacity: v[0],
+							});
+						},
+					}}
+					blur={{
+						value: [project.camera.advanced_shadow?.blur ?? 50],
+						onChange: (v) => {
+							setProject("camera", "advanced_shadow", {
+								...(project.camera.advanced_shadow ?? {
+									size: 50,
+									opacity: 18,
+									blur: 50,
+								}),
+								blur: v[0],
+							});
+						},
+					}}
+					inset={{
+						value: project.camera.advanced_shadow?.inset ?? false,
+						onChange: (v) => {
+							setProject("camera", "advanced_shadow", {
+								...(project.camera.advanced_shadow ?? {
+									size: 50,
+									opacity: 18,
+									blur: 50,
+								}),
+								inset: v,
+							});
+						},
+					}}
+				/>
 				</div>
 			</Field>
 			{/* <ComingSoonTooltip>

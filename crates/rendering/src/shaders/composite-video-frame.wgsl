@@ -16,7 +16,9 @@ struct Uniforms {
     opacity: f32,
     border_enabled: f32,
     border_width: f32,
+    shadow_inset: f32,       // 1.0 = inset/inner shadow, 0.0 = drop shadow
     _padding1: vec2<f32>,
+    _padding1b: vec2<f32>,
     border_color: vec4<f32>,
     _padding2: vec4<f32>,
 };
@@ -84,8 +86,19 @@ fn fs_main(@builtin(position) frag_coord: vec4<f32>) -> @location(0) vec4<f32> {
 
     let shadow_dist = sdf_rounded_rect(p - center, size, uniforms.rounding_px);
 
-    // Apply blur and size to shadow
-    let shadow_strength_final = smoothstep(shadow_size + shadow_blur, -shadow_blur, abs(shadow_dist));
+    // Calculate shadow strength based on inset mode
+    var shadow_strength_final: f32;
+    if (uniforms.shadow_inset > 0.5) {
+        // Inset shadow: appears inside the frame edges
+        // shadow_dist < 0 means inside the shape
+        // We want shadow to appear near the inner edges (where shadow_dist is slightly negative)
+        let inner_dist = -shadow_dist; // flip so positive = inside
+        shadow_strength_final = smoothstep(shadow_size + shadow_blur, 0.0, inner_dist) 
+                              * smoothstep(-shadow_blur, 0.0, inner_dist);
+    } else {
+        // Drop shadow: appears outside the frame (original behavior)
+        shadow_strength_final = smoothstep(shadow_size + shadow_blur, -shadow_blur, abs(shadow_dist));
+    }
     let shadow_color = vec4<f32>(0.0, 0.0, 0.0, shadow_strength_final * shadow_opacity);
 
     let uv = p / uniforms.output_size;
@@ -113,6 +126,11 @@ fn fs_main(@builtin(position) frag_coord: vec4<f32>) -> @location(0) vec4<f32> {
     }
     
     if target_uv.x < 0.0 || target_uv.x > 1.0 || target_uv.y < 0.0 || target_uv.y > 1.0 {
+        // For inset shadows, return transparent outside the frame
+        if (uniforms.shadow_inset > 0.5) {
+            return vec4<f32>(0.0);
+        }
+        // For drop shadows, return shadow color outside the frame
         return shadow_color;
     }
 
@@ -123,6 +141,13 @@ fn fs_main(@builtin(position) frag_coord: vec4<f32>) -> @location(0) vec4<f32> {
     let blur_amount = select(uniforms.motion_blur_amount, uniforms.camera_motion_blur_amount, uniforms.camera_motion_blur_amount > 0.0);
 
     if blur_amount < 0.01 {
+        // For inset shadows, overlay shadow ON TOP of base color
+        if (uniforms.shadow_inset > 0.5) {
+            // Darken the base color where shadow appears (multiply blend)
+            let darkened = base_color.rgb * (1.0 - shadow_color.a);
+            return vec4<f32>(darkened, base_color.a);
+        }
+        // For drop shadows, shadow goes behind
         return mix(shadow_color, base_color, base_color.a);
     }
 
@@ -169,6 +194,13 @@ fn fs_main(@builtin(position) frag_coord: vec4<f32>) -> @location(0) vec4<f32> {
 
     let final_color = accum / weight_sum;
     let blurred = vec4(final_color.rgb, base_color.a);
+    
+    // For inset shadows, overlay shadow ON TOP of blurred content
+    if (uniforms.shadow_inset > 0.5) {
+        let darkened = blurred.rgb * (1.0 - shadow_color.a);
+        return vec4<f32>(darkened, blurred.a);
+    }
+    // For drop shadows, shadow goes behind
     return mix(shadow_color, blurred, blurred.a);
 }
 

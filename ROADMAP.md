@@ -38,44 +38,46 @@ Capture → Decoding → Layer Compositing → GPU Shaders → Export
 ## Planned Features (Screen Studio-inspired)
 
 ### Priority 1: Background & Padding
-**Status:** 🟡 Partially Done  
-**Difficulty:** Easy
-
-Background system exists. Need to add **padding/margin around recording**.
+**Status:** ✅ Already Implemented  
+**Difficulty:** N/A (Done!)
 
 **Already Implemented:**
 - [x] Background color picker
-- [x] Gradient backgrounds
-- [x] Corner radius for recording area
+- [x] Gradient backgrounds  
+- [x] Image backgrounds
+- [x] Corner radius for recording area (`project.background.rounding`)
+- [x] Padding slider (0-100%) - `project.background.padding` with `SCREEN_MAX_PADDING = 0.4`
 
-**Needs Implementation:**
-- [ ] Padding size slider (px) - Adjust `target_bounds` in compositor
-- [ ] Preset themes (dark, light, gradient)
+**Code Location:**
+- Padding calculation: `crates/rendering/src/lib.rs` lines 491-494
+- UI: `apps/desktop/src/routes/editor/ConfigSidebar.tsx` line 1661
 
-**Implementation Notes:**
-- Modify `crates/rendering/src/layers/background.rs` to support inset
-- Adjust `target_bounds` calculation in `crates/rendering/src/lib.rs`
-- Add padding UI control in `apps/desktop/src/routes/editor/ConfigSidebar.tsx`
+**Potential Enhancements:**
+- [ ] Preset themes (dark, light, gradient presets)
+- [ ] Padding in pixels instead of percentage
 
 ---
 
 ### Priority 2: Shadow & Inset Effects
-**Status:** ✅ Mostly Done  
-**Difficulty:** Easy (for remaining work)
+**Status:** 🟡 Mostly Done  
+**Difficulty:** Easy (for inset shadow)
 
 **Already Implemented:**
-- [x] Drop shadow toggle
-- [x] Shadow blur/spread controls
-- [x] Shadow color/opacity
-- [x] Full shadow UI in `ShadowSettings.tsx`
+- [x] Drop shadow toggle (`project.background.shadow`)
+- [x] Shadow size control (0-100%)
+- [x] Shadow opacity control (0-100%)
+- [x] Shadow blur control (0-100%)
+- [x] Full advanced shadow UI in `ShadowSettings.tsx`
+- [x] Border/outline support (`project.background.border`)
 
 **Needs Implementation:**
-- [ ] Inner shadow/inset option - Minor shader modification
+- [ ] Inner shadow/inset option - Shader modification needed
 
 **Implementation Notes:**
-- Drop shadow implemented in `composite-video-frame.wgsl` shader
-- For inset shadow: Add second shadow pass with inverted alpha mask
-- UI already exists, just need to add inset toggle to `ShadowSettings.tsx`
+- Drop shadow: `composite-video-frame.wgsl` uses SDF `sdf_rounded_rect()` + smoothstep
+- For inset: Use inverted SDF distance (positive inside → shadow inside edges)
+- Add `inset: boolean` to `AdvancedShadow` type in project config
+- Add toggle in `ShadowSettings.tsx`
 
 ---
 
@@ -144,15 +146,16 @@ Show keyboard shortcuts on screen as they're pressed during recording.
 
 | Feature | Status | Effort |
 |---------|--------|--------|
-| Padding around recording | 🟡 Needs work | Easy |
-| Inset shadow option | 🟡 Needs work | Easy |
-| Keyboard shortcut display | 🔴 Not started | Medium-Hard |
-| Continuous cursor-following zoom | 🟡 Enhancement | Easy |
-| Smooth cursor | ✅ Done | - |
+| Padding around recording | ✅ Done | - |
 | Drop shadows | ✅ Done | - |
+| Border/outline | ✅ Done | - |
+| Smooth cursor | ✅ Done | - |
 | Click-based auto-zoom | ✅ Done | - |
+| Inset shadow option | 🟡 Needs work | Easy |
+| Continuous cursor-following zoom | 🟡 Enhancement | Easy |
+| Keyboard shortcut display | 🔴 Not started | Medium-Hard |
 
-**Good news:** 3 of 5 features already implemented! Focus on padding, inset shadows, and keyboard display.
+**Great news:** 5 of 8 features already implemented! Focus on inset shadows and keyboard display.
 
 ---
 

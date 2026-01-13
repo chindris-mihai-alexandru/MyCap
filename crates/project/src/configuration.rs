@@ -198,6 +198,8 @@ pub struct ShadowConfiguration {
     pub size: f32,    // Overall shadow size (0-100)
     pub opacity: f32, // Shadow opacity (0-100)
     pub blur: f32,    // Shadow blur amount (0-100)
+    #[serde(default)]
+    pub inset: bool,  // If true, render shadow inside the frame (inner shadow)
 }
 
 #[derive(Type, Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -326,6 +328,7 @@ impl Default for Camera {
                 size: 33.9,
                 opacity: 44.2,
                 blur: 10.5,
+                inset: false,
             }),
             shape: CameraShape::Square,
         }
@@ -338,6 +341,7 @@ impl Default for ShadowConfiguration {
             size: 14.4,
             opacity: 68.1,
             blur: 3.8,
+            inset: false,
         }
     }
 }

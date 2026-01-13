@@ -1,6 +1,7 @@
 import { cx } from "cva";
 import { createSignal } from "solid-js";
-import { Field, Slider } from "./ui";
+import { Toggle } from "~/components/Toggle";
+import { Field, Slider, Subfield } from "./ui";
 
 interface Props {
 	size: {
@@ -14,6 +15,10 @@ interface Props {
 	blur: {
 		value: number[];
 		onChange: (v: number[]) => void;
+	};
+	inset?: {
+		value: boolean;
+		onChange: (v: boolean) => void;
 	};
 	scrollRef?: HTMLDivElement;
 }
@@ -51,6 +56,14 @@ const ShadowSettings = (props: Props) => {
 
 			{isOpen() && (
 				<div class="mt-4 space-y-6 font-medium">
+					{props.inset && (
+						<Subfield name="Inset Shadow">
+							<Toggle
+								checked={props.inset.value}
+								onChange={props.inset.onChange}
+							/>
+						</Subfield>
+					)}
 					<Field name="Size">
 						<Slider
 							value={props.size.value}
